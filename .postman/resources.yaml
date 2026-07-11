@@ -1,0 +1,8 @@
+# Use this workspace to collaborate
+workspace:
+  id: 63a5a5cd-47ba-4b1c-8019-b66e89f8f0e3
+
+localResources:
+  specs:
+    - ../sonora-audio-service/proto/audio.proto
+    - ../sonora-backend/proto/audio.proto

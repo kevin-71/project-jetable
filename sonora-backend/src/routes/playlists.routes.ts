@@ -15,8 +15,13 @@ playlistsRouter.get('/playlists', requireAuth, async (_request, response, next) 
 
 playlistsRouter.post('/playlists', requireAuth, async (request, response, next) => {
   try {
-    const user = request.user as { sub: string };
-    const result = await playlistProxy.createPlaylist({ ...request.body, userId: user.sub });
+    const user = request.user as { sub: string; email?: string; displayName?: string };
+    const result = await playlistProxy.createPlaylist({
+      ...request.body,
+      userId: user.sub,
+      email: user.email,
+      displayName: user.displayName,
+    });
     response.status(result.status).json(result.body);
   } catch (error) {
     next(error);

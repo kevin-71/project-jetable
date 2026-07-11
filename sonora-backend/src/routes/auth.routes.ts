@@ -43,6 +43,20 @@ authRouter.get('/auth/google/callback', passport.authenticate('google', { sessio
   }
 });
 
+authRouter.post('/auth/dev-token', (request, response) => {
+  const { userId, email, name } = request.body as { userId?: string; email?: string; name?: string };
+  const sub = userId || 'dev-user';
+  const token = signInternalToken({
+    sub,
+    email: email || 'dev@example.com',
+    displayName: name || 'Developer User',
+  });
+  response.json({
+    token,
+    user: { id: sub, email: email || 'dev@example.com', displayName: name || 'Developer User' },
+  });
+});
+
 authRouter.post('/auth/logout', (_request, response) => {
   response.status(204).send();
 });

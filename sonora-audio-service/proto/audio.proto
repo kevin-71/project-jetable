@@ -6,6 +6,7 @@ service AudioService {
   rpc GenerateAudio (GenerateAudioRequest) returns (GenerateAudioResponse);
   rpc GetJobStatus (JobStatusRequest) returns (JobStatusResponse);
   rpc ListJobs (ListJobsRequest) returns (ListJobsResponse);
+  rpc DeleteJob (DeleteJobRequest) returns (DeleteJobResponse);
 }
 
 message GenerateAudioRequest {

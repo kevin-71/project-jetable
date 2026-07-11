@@ -32,7 +32,24 @@ playlistsRouter.get('/playlists', async (request, response, next) => {
 
 playlistsRouter.post('/playlists', async (request, response, next) => {
   try {
-    const { userId, name } = request.body as { userId: string; name: string };
+    const { userId, name, email, displayName } = request.body as {
+      userId: string;
+      name: string;
+      email?: string;
+      displayName?: string;
+    };
+
+    // Ensure the user exists in the database
+    await prisma.user.upsert({
+      where: { id: userId },
+      update: {},
+      create: {
+        id: userId,
+        email: email || `${userId}@placeholder.com`,
+        name: displayName || name || 'User',
+      },
+    });
+
     const playlist = await prisma.playlist.create({ data: { userId, name } });
     response.status(201).json(playlist);
   } catch (error) {

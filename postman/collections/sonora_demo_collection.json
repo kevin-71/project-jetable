@@ -1,0 +1,308 @@
+{
+  "info": {
+    "_postman_id": "426177b9-8c9e-4e44-b2c6-d92ea407c08a",
+    "name": "Sonora API Demo",
+    "description": "Collection de démonstration pour Sonora - Architecture Microservices.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Generate Developer Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "pm.collectionVariables.set(\"token\", jsonData.token);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": \"demo-external-user\",\n  \"email\": \"demo.external@example.com\",\n  \"name\": \"Demo User\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:4000/auth/dev-token",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "4000",
+          "path": [
+            "auth",
+            "dev-token"
+          ]
+        },
+        "description": "Génère un jeton JWT valide pour l'utilisateur externe démo. Ce jeton est automatiquement sauvegardé dans la variable de collection `token`."
+      },
+      "response": []
+    },
+    {
+      "name": "2. Create Playlist (With JWT)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "pm.collectionVariables.set(\"playlistId\", jsonData.id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"My Tech Podcasts Playlist\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:4000/playlists",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "4000",
+          "path": [
+            "playlists"
+          ]
+        },
+        "description": "Crée une nouvelle playlist pour l'utilisateur authentifié."
+      },
+      "response": []
+    },
+    {
+      "name": "3. List Playlists (With JWT)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:4000/playlists",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "4000",
+          "path": [
+            "playlists"
+          ]
+        },
+        "description": "Récupère la liste des playlists de l'utilisateur."
+      },
+      "response": []
+    },
+    {
+      "name": "4. Submit Article for TTS (With JWT)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "pm.collectionVariables.set(\"jobId\", jsonData.job_id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"articleUrl\": \"https://example.com/typescript-tutorial\",\n  \"articleText\": \"TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:4000/articles",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "4000",
+          "path": [
+            "articles"
+          ]
+        },
+        "description": "Soumet un texte d'article technique à convertir en audio. Renvoie un job_id."
+      },
+      "response": []
+    },
+    {
+      "name": "5. Get TTS Job Status (With JWT)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:4000/articles/{{jobId}}/status",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "4000",
+          "path": [
+            "articles",
+            "{{jobId}}",
+            "status"
+          ]
+        },
+        "description": "Vérifie l'état d'avancement de la conversion du podcast."
+      },
+      "response": []
+    },
+    {
+      "name": "6. Add Audio Item to Playlist (With JWT)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"audioJobId\": \"{{jobId}}\",\n  \"title\": \"TypeScript Tutorial Podcast\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:4000/playlists/{{playlistId}}/items",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "4000",
+          "path": [
+            "playlists",
+            "{{playlistId}}",
+            "items"
+          ]
+        },
+        "description": "Ajoute l'audio généré à la playlist créée."
+      },
+      "response": []
+    },
+    {
+      "name": "7. Reorder Playlist Items (With JWT)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"itemIds\": [\"some-item-uuid-1\", \"some-item-uuid-2\"]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:4000/playlists/{{playlistId}}/reorder",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "4000",
+          "path": [
+            "playlists",
+            "{{playlistId}}",
+            "reorder"
+          ]
+        },
+        "description": "Réorganise les éléments de la playlist (requiert une liste ordonnée d'identifiants d'éléments)."
+      },
+      "response": []
+    },
+    {
+      "name": "8. Access Denied Demo (Without JWT)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:4000/playlists",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "4000",
+          "path": [
+            "playlists"
+          ]
+        },
+        "description": "Démontre la réponse d'accès refusé (401 Unauthorized) en appelant une route protégée sans en-tête d'autorisation."
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "playlistId",
+      "value": ""
+    },
+    {
+      "key": "jobId",
+      "value": ""
+    }
+  ]
+}
