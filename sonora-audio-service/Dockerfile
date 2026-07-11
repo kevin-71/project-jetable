@@ -9,6 +9,9 @@ RUN npm run build
 FROM node:20-alpine
 WORKDIR /app
 ENV NODE_ENV=production
+# Install Python + pip + edge-tts CLI
+RUN apk add --no-cache python3 py3-pip && \
+    pip3 install --break-system-packages edge-tts
 COPY package.json ./package.json
 COPY proto ./proto
 RUN npm install --omit=dev

@@ -1,6 +1,9 @@
-import { EdgeTTS } from '@travisvn/edge-tts';
+import { spawn } from 'node:child_process';
+import { readFile, unlink, mkdir } from 'node:fs/promises';
+import path from 'node:path';
+import { randomUUID } from 'node:crypto';
 
-export async function synthesizeSpeech(articleText: string) {
+export async function synthesizeSpeech(articleText: string): Promise<Buffer> {
   const provider = process.env.TTS_PROVIDER ?? 'edge-tts';
 
   if (provider === 'mock') {
@@ -9,11 +12,38 @@ export async function synthesizeSpeech(articleText: string) {
     return Buffer.from(base64SilentWav, 'base64');
   }
 
-  // Use French neural voice by default, customizable via environment variable
+  // Use Python edge-tts CLI — outputs MP3, more reliably maintained than Node wrappers
   const voice = process.env.TTS_VOICE ?? 'fr-FR-DeniseNeural';
-  const tts = new EdgeTTS(articleText, voice);
-  
-  const result = await tts.synthesize();
-  const arrayBuffer = await result.audio.arrayBuffer();
-  return Buffer.from(arrayBuffer);
+  const storageDir = process.env.AUDIO_STORAGE_DIR ?? '/tmp/sonora-audio';
+  await mkdir(storageDir, { recursive: true });
+
+  const tmpFile = path.join(storageDir, `tts-tmp-${randomUUID()}.mp3`);
+
+  await new Promise<void>((resolve, reject) => {
+    const proc = spawn('edge-tts', [
+      '--voice', voice,
+      '--text', articleText,
+      '--write-media', tmpFile,
+    ]);
+
+    let stderr = '';
+    proc.stderr.on('data', (chunk: Buffer) => { stderr += chunk.toString(); });
+
+    proc.on('close', (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new Error(`edge-tts exited with code ${code}: ${stderr}`));
+      }
+    });
+
+    proc.on('error', (err) => {
+      reject(new Error(`Failed to spawn edge-tts: ${err.message}`));
+    });
+  });
+
+  const audio = await readFile(tmpFile);
+  await unlink(tmpFile).catch(() => {}); // clean up temp file
+  return audio;
 }
+

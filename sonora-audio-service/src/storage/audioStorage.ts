@@ -4,7 +4,7 @@ import path from 'node:path';
 export async function storeAudio(jobId: string, audio: Buffer) {
   const baseDir = process.env.AUDIO_STORAGE_DIR ?? '/tmp/sonora-audio';
   await mkdir(baseDir, { recursive: true });
-  const filePath = path.join(baseDir, `${jobId}.wav`);
+  const filePath = path.join(baseDir, `${jobId}.mp3`);
   await writeFile(filePath, audio);
   return filePath;
 }
