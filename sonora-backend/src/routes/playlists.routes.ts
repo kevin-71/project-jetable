@@ -45,3 +45,21 @@ playlistsRouter.patch('/playlists/:id/reorder', requireAuth, async (request, res
     next(error);
   }
 });
+
+playlistsRouter.delete('/playlists/:id', requireAuth, async (request, response, next) => {
+  try {
+    const result = await playlistProxy.deletePlaylist(request.params.id as string);
+    response.status(result.status).json(result.body);
+  } catch (error) {
+    next(error);
+  }
+});
+
+playlistsRouter.delete('/playlists/:id/items/:itemId', requireAuth, async (request, response, next) => {
+  try {
+    const result = await playlistProxy.deletePlaylistItem(request.params.id as string, request.params.itemId as string);
+    response.status(result.status).json(result.body);
+  } catch (error) {
+    next(error);
+  }
+});

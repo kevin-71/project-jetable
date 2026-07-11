@@ -103,3 +103,15 @@ export function listJobs(userId: string) {
     });
   });
 }
+
+export function deleteJob(jobId: string) {
+  return new Promise<{ job_id: string; success: boolean }>((resolve, reject) => {
+    client.DeleteJob({ job_id: jobId }, (error: Error | null, response: { job_id: string; success: boolean }) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve(response);
+    });
+  });
+}

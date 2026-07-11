@@ -21,4 +21,7 @@ export const playlistProxy = {
   createPlaylist: (body: unknown) => forward('/playlists', { method: 'POST', body: JSON.stringify(body) }),
   addPlaylistItem: (playlistId: string, body: unknown) => forward(`/playlists/${playlistId}/items`, { method: 'POST', body: JSON.stringify(body) }),
   reorderPlaylist: (playlistId: string, body: unknown) => forward(`/playlists/${playlistId}/reorder`, { method: 'PATCH', body: JSON.stringify(body) }),
+  deletePlaylist: (playlistId: string) => forward(`/playlists/${playlistId}`, { method: 'DELETE' }),
+  deletePlaylistItemsByAudioJobId: (audioJobId: string) => forward(`/items/by-audio/${encodeURIComponent(audioJobId)}`, { method: 'DELETE' }),
+  deletePlaylistItem: (playlistId: string, itemId: string) => forward(`/playlists/${playlistId}/items/${itemId}`, { method: 'DELETE' }),
 };

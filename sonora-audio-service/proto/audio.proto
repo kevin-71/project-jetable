@@ -50,3 +50,12 @@ message AudioJobSummary {
 message ListJobsResponse {
   repeated AudioJobSummary jobs = 1;
 }
+
+message DeleteJobRequest {
+  string job_id = 1;
+}
+
+message DeleteJobResponse {
+  string job_id = 1;
+  bool success = 2;
+}

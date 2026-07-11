@@ -700,3 +700,64 @@ button {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* Deletion styling */
+.delete-playlist-btn {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.delete-playlist-btn:hover {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.playlist-title-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.job-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.delete-job-btn {
+  background: transparent;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.delete-job-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.track-delete-btn {
+  background: transparent;
+  border: none;
+  padding: 0.35rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.track-delete-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+

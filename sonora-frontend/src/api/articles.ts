@@ -16,3 +16,9 @@ export function createArticle(payload: CreateArticlePayload) {
     body: JSON.stringify(payload),
   });
 }
+
+export function deleteArticle(jobId: string) {
+  return request<{ job_id: string; success: boolean }>(`/articles/${jobId}`, {
+    method: 'DELETE',
+  });
+}

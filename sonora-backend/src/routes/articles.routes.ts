@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { requireAuth } from '../auth/auth.middleware.js';
-import { generateAudio, getJobStatus, listJobs } from '../gateway/audio.client.js';
+import { generateAudio, getJobStatus, listJobs, deleteJob } from '../gateway/audio.client.js';
+import { playlistProxy } from '../gateway/playlist.proxy.js';
 
 export const articlesRouter = Router();
 
@@ -34,6 +35,19 @@ articlesRouter.get('/articles/:jobId/status', requireAuth, async (request, respo
   try {
     const job = await getJobStatus(request.params.jobId as string);
     response.json(job);
+  } catch (error) {
+    next(error);
+  }
+});
+
+articlesRouter.delete('/articles/:jobId', requireAuth, async (request, response, next) => {
+  try {
+    const jobId = request.params.jobId as string;
+    // Clean up any references in user's playlists
+    await playlistProxy.deletePlaylistItemsByAudioJobId(jobId);
+    // Delete the audio job from audio service
+    const result = await deleteJob(jobId);
+    response.json(result);
   } catch (error) {
     next(error);
   }

@@ -35,3 +35,27 @@ itemsRouter.patch('/playlists/:id/reorder', async (request, response, next) => {
     next(error);
   }
 });
+
+itemsRouter.delete('/items/by-audio/:audioJobId', async (request, response, next) => {
+  try {
+    const { audioJobId } = request.params;
+    await prisma.playlistItem.deleteMany({
+      where: { audioJobId },
+    });
+    response.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+});
+
+itemsRouter.delete('/playlists/:playlistId/items/:itemId', async (request, response, next) => {
+  try {
+    const { itemId } = request.params;
+    await prisma.playlistItem.delete({
+      where: { id: itemId },
+    });
+    response.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+});

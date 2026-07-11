@@ -2,6 +2,7 @@ import type { ServerUnaryCall, sendUnaryData } from '@grpc/grpc-js';
 import { generateAudio } from './handlers/generateAudio.js';
 import { getJobStatus } from './handlers/getJobStatus.js';
 import { listJobs } from './handlers/listJobs.js';
+import { deleteJob } from './handlers/deleteJob.js';
 
 export function createAudioService() {
   return {
@@ -26,6 +27,14 @@ export function createAudioService() {
       callback: sendUnaryData<unknown>,
     ) => {
       listJobs(call)
+        .then((result) => callback(null, result))
+        .catch((error) => callback(error as Error, null));
+    },
+    DeleteJob: (
+      call: ServerUnaryCall<{ job_id: string }, unknown>,
+      callback: sendUnaryData<unknown>,
+    ) => {
+      deleteJob(call)
         .then((result) => callback(null, result))
         .catch((error) => callback(error as Error, null));
     },

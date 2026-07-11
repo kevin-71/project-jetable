@@ -25,3 +25,15 @@ export function reorderPlaylist(playlistId: string, itemIds: string[]) {
     body: JSON.stringify({ itemIds }),
   });
 }
+
+export function deletePlaylist(playlistId: string) {
+  return request<void>(`/playlists/${playlistId}`, {
+    method: 'DELETE',
+  });
+}
+
+export function deletePlaylistItem(playlistId: string, itemId: string) {
+  return request<void>(`/playlists/${playlistId}/items/${itemId}`, {
+    method: 'DELETE',
+  });
+}

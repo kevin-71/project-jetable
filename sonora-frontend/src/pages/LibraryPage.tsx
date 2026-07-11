@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { request } from '../api/client';
-import { createArticle } from '../api/articles';
+import { createArticle, deleteArticle } from '../api/articles';
 import { listPlaylists, addPlaylistItem } from '../api/playlists';
 import type { ApiAudioJob, Playlist } from '../types';
 
@@ -90,6 +90,20 @@ export function LibraryPage({ onPlayTrack }: LibraryPageProps) {
       alert('Erreur lors de la création du job audio.');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDeleteJob = async (jobId: string) => {
+    if (!window.confirm('Voulez-vous vraiment supprimer ce podcast ?')) {
+      return;
+    }
+
+    try {
+      await deleteArticle(jobId);
+      setJobs((prevJobs) => prevJobs.filter((job) => job.job_id !== jobId));
+    } catch (error) {
+      console.error('Failed to delete job:', error);
+      alert('Erreur lors de la suppression du podcast.');
     }
   };
 
@@ -185,9 +199,19 @@ export function LibraryPage({ onPlayTrack }: LibraryPageProps) {
                   <span className={getStatusBadgeClass(job.status)}>
                     {getStatusLabel(job.status)}
                   </span>
-                  <span className="job-date">
-                    ID: {job.job_id.slice(0, 8)}...
-                  </span>
+                  <div className="job-header-right">
+                    <span className="job-date">
+                      ID: {job.job_id.slice(0, 8)}...
+                    </span>
+                    <button
+                      type="button"
+                      className="delete-job-btn"
+                      onClick={() => handleDeleteJob(job.job_id)}
+                      title="Supprimer ce podcast"
+                    >
+                      🗑️
+                    </button>
+                  </div>
                 </div>
                 
                 <p className="job-preview">

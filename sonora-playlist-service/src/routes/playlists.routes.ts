@@ -56,3 +56,15 @@ playlistsRouter.post('/playlists', async (request, response, next) => {
     next(error);
   }
 });
+
+playlistsRouter.delete('/playlists/:id', async (request, response, next) => {
+  try {
+    const id = request.params.id;
+    await prisma.playlist.delete({
+      where: { id },
+    });
+    response.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+});

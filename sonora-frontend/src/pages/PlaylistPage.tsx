@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { request } from '../api/client';
-import { createPlaylist, reorderPlaylist, listPlaylists } from '../api/playlists';
+import { createPlaylist, reorderPlaylist, listPlaylists, deletePlaylist, deletePlaylistItem } from '../api/playlists';
 import type { Playlist, PlaylistItem, ApiJobStatus } from '../types';
 
 interface PlaylistPageProps {
@@ -101,6 +101,41 @@ export function PlaylistPage({ onPlayTrack }: PlaylistPageProps) {
     }
   };
 
+  const handleDeletePlaylist = async (playlistId: string) => {
+    if (!window.confirm('Voulez-vous vraiment supprimer cette playlist ?')) {
+      return;
+    }
+
+    try {
+      await deletePlaylist(playlistId);
+      const remainingPlaylists = playlists.filter((p) => p.id !== playlistId);
+      setPlaylists(remainingPlaylists);
+      if (remainingPlaylists.length > 0) {
+        setActivePlaylistId(remainingPlaylists[0].id);
+      } else {
+        setActivePlaylistId(null);
+      }
+    } catch (error) {
+      console.error('Failed to delete playlist:', error);
+      alert('Erreur lors de la suppression de la playlist.');
+    }
+  };
+
+  const handleDeleteItem = async (itemId: string) => {
+    if (!activePlaylistId) return;
+    if (!window.confirm('Voulez-vous vraiment retirer ce podcast de la playlist ?')) {
+      return;
+    }
+
+    try {
+      await deletePlaylistItem(activePlaylistId, itemId);
+      await fetchPlaylists();
+    } catch (error) {
+      console.error('Failed to delete item from playlist:', error);
+      alert('Erreur lors du retrait du podcast.');
+    }
+  };
+
   const selectedPlaylist = playlists.find((p) => p.id === activePlaylistId);
 
   return (
@@ -148,8 +183,17 @@ export function PlaylistPage({ onPlayTrack }: PlaylistPageProps) {
           ) : selectedPlaylist ? (
             <>
               <div className="playlist-details-header">
-                <h3>{selectedPlaylist.name}</h3>
-                <span className="muted">{selectedPlaylist.items.length} podcasts</span>
+                <div className="playlist-title-info">
+                  <h3>{selectedPlaylist.name}</h3>
+                  <span className="muted">{selectedPlaylist.items.length} podcasts</span>
+                </div>
+                <button
+                  type="button"
+                  className="delete-playlist-btn"
+                  onClick={() => handleDeletePlaylist(selectedPlaylist.id)}
+                >
+                  🗑️ Supprimer
+                </button>
               </div>
 
               {selectedPlaylist.items.length === 0 ? (
@@ -174,6 +218,14 @@ export function PlaylistPage({ onPlayTrack }: PlaylistPageProps) {
                           onClick={() => handlePlayItem(item)}
                         >
                           ▶️ Lire
+                        </button>
+                        <button
+                          type="button"
+                          className="track-delete-btn"
+                          onClick={() => handleDeleteItem(item.id)}
+                          title="Retirer de la playlist"
+                        >
+                          🗑️
                         </button>
                         <div className="reorder-controls">
                           <button
